@@ -117,3 +117,11 @@ elif page == "Optimisation Machine Learning":
         if st.button("Lancer la Simulation de Stock"):
             st.success(f"Probabilité de rupture de stock : {np.random.randint(1, 5)}% avec l'optimisation actuelle.")
             st.info("Recommandation : Augmenter la collecte locale à Parakou de 15% pour sécuriser le flux.")
+from models.engine import SteelEngine # Import de ton moteur de calcul
+
+# Puis, dans ta page Machine Learning, utilise-le :
+if st.button("Lancer la Simulation"):
+    res = SteelEngine.predict_demand(tonnage_voulu)
+    roi = SteelEngine.calculate_roi(24) # 24% est ton taux actuel
+    st.success(f"Prédiction de flux : {res} Tonnes")
+    st.metric("ROI Estimé", f"{roi}%")
