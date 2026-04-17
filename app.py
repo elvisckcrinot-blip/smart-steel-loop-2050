@@ -3,101 +3,79 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 
-# --- LOGIQUE INDUSTRIELLE EXPERTE (SteelEngine) ---
+# --- MOTEUR DE CALCUL (LA LOGIQUE) ---
 class SteelEngine:
     @staticmethod
-    def predict_demand(tonnage_input):
-        # Simulation Random Forest : Ajout d'une variabilité de 5% (Inspiration MIT)
-        confidence_interval = 0.05
-        prediction = tonnage_input * (1 + np.random.uniform(-confidence_interval, confidence_interval))
-        return round(prediction, 2)
-
+    def simuler_gain(recyclage):
+        return round(recyclage * 0.5, 2)
     @staticmethod
-    def calculate_roi(recycling_rate):
-        # Impact financier : +0.5% ROI pour chaque 1% de recyclage
-        impact = recycling_rate * 0.5
-        return round(impact, 2)
+    def predire_stock(demande):
+        return round(demande * 1.15, 0)
 
-    @staticmethod
-    def simulate_buffer_stock(avg_demand):
-        # Calcul du stock de sécurité (Poka-Yoke numérique)
-        # Formule simplifiée : Demande moyenne * Facteur de service (1.2)
-        return round(avg_demand * 1.2, 0)
+# --- CONFIGURATION & DESIGN ---
+st.set_page_config(page_title="SIAB Smart-Steel Loop", layout="wide")
 
-# --- CONFIGURATION DE LA PAGE ---
-st.set_page_config(page_title="SIAB Smart-Steel Loop 2050", page_icon="🏗️", layout="wide")
-
-# --- DESIGN "MIDNIGHT BLUE" ---
 st.markdown("""
     <style>
-    .stApp { background-color: #001f3f; color: #ffffff; }
-    [data-testid="stMetricValue"] { color: #00d1ff !important; }
+    .stApp { background-color: #001f3f; color: white; }
+    [data-testid="stMetricValue"] { color: #00d1ff !important; font-weight: bold; }
     div[data-testid="metric-container"] {
         background-color: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(0, 209, 255, 0.3);
-        padding: 15px; border-radius: 10px;
+        border-left: 5px solid #ff851b;
+        padding: 15px;
     }
-    .stButton>button {
-        background-color: #ff851b; color: white;
-        border-radius: 5px; border: none; width: 100%; font-weight: bold; height: 3em;
-    }
-    .stButton>button:hover { background-color: #ff7400; border: 1px solid white; }
-    section[data-testid="stSidebar"] { background-color: #001529; }
+    .stButton>button { background-color: #ff851b; color: white; font-weight: bold; height: 3em; width: 100%; border: none; }
+    .stButton>button:hover { background-color: #e67616; border: 1px solid white; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- NAVIGATION ---
-st.sidebar.image("https://img.icons8.com/fluency/96/factory.png", width=80)
-st.sidebar.title("Control Tower")
-page = st.sidebar.radio("Navigation", ["Dashboard Exécutif", "Simulateur de Flux", "Prédiction Machine Learning"])
+# --- BARRE LATÉRALE ---
+st.sidebar.title("🚀 Menu Stratégique")
+choix = st.sidebar.radio("Où voulez-vous aller ?", 
+    ["1. Vue d'Ensemble (Dashboard)", 
+     "2. Simulateur de Gain (Logistique)", 
+     "3. Prédiction IA (Stocks)"])
 
 # --- PAGE 1 : DASHBOARD ---
-if page == "Dashboard Exécutif":
-    st.title("🏗️ Performance Industrielle SIAB")
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Lead Time Chargement", "42 min", "-18%")
-    col2.metric("Taux de Recyclage", "24%", "+7%")
-    col3.metric("Erreurs Livraison", "0.2%", "-92%")
-    col4.metric("Économie de Carbone", "15.4 T", "+12%")
+if choix == "1. Vue d'Ensemble (Dashboard)":
+    st.title("📊 Tableau de Bord : Performance SIAB")
+    st.write("Ce tableau montre l'impact du projet sur les opérations actuelles.")
     
-    # Graphique de comparaison
-    data = pd.DataFrame({
-        'Jour': ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'],
-        'Sans Optimisation': [85, 88, 82, 90, 87],
-        'Smart-Steel Loop': [95, 98, 97, 102, 105]
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Temps de Chargement", "42 min", "-18% (Gain Lean)")
+    c2.metric("Taux de Recyclage", "24%", "+7% (Économie)")
+    c3.metric("Erreurs Livraison", "0.2%", "-92% (Qualité)")
+
+    st.subheader("📈 Évolution de la Productivité")
+    df = pd.DataFrame({
+        'Mois': ['Jan', 'Féb', 'Mar', 'Avr', 'Mai'],
+        'Avant Projet': [100, 102, 101, 103, 102],
+        'Avec Smart-Steel': [100, 112, 118, 125, 130]
     })
-    fig = px.bar(data, x='Jour', y=['Sans Optimisation', 'Smart-Steel Loop'], barmode='group', title="Productivité Quotidienne (Tonnes)")
+    fig = px.line(df, x='Mois', y=['Avant Projet', 'Avec Smart-Steel'], markers=True)
     fig.update_layout(template="plotly_dark", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
     st.plotly_chart(fig, use_container_width=True)
 
-# --- PAGE 2 : SIMULATEUR DE FLUX (NOUVEAU) ---
-elif page == "Simulateur de Flux":
-    st.header("🔄 Simulateur de Boucle Circulaire")
-    st.write("Calculez l'impact du recyclage sur vos stocks en temps réel.")
+# --- PAGE 2 : SIMULATEUR ---
+elif choix == "2. Simulateur de Gain (Logistique)":
+    st.title("♻️ Simulateur de Logistique Inverse")
+    st.info("Ici, nous calculons combien d'argent la SIAB gagne en récupérant de la ferraille sur les chantiers.")
     
-    col_a, col_b = st.columns(2)
-    with col_a:
-        ferraille_collectee = st.number_input("Ferraille collectée ce mois (Tonnes)", 0, 1000, 150)
-    with col_b:
-        objectif_recyclage = st.slider("Cible de recyclage (%)", 10, 80, 25)
+    taux = st.slider("Choisissez un taux de récupération (%)", 0, 100, 25)
     
-    if st.button("Simuler l'Impact"):
-        gain = SteelEngine.calculate_roi(objectif_recyclage)
-        st.markdown(f"### 📊 Résultat : +{gain}% de marge nette logistique.")
-        st.progress(objectif_recyclage / 100)
-        st.info(f"En recyclant {objectif_recyclage}%, la SIAB économise environ {int(ferraille_collectee * (objectif_recyclage/100))} tonnes de matière première neuve.")
+    if st.button("Calculer le bénéfice financier"):
+        gain = SteelEngine.simuler_gain(taux)
+        st.success(f"### Résultat : En récupérant {taux}% de ferraille, vous augmentez votre marge de **{gain}%**.")
+        st.write("C'est l'application directe du concept de 'Flux Tirés'.")
 
-# --- PAGE 3 : MACHINE LEARNING ---
-elif page == "Prédiction Machine Learning":
-    st.header("🤖 Intelligence Artificielle & Stocks")
-    tonnage = st.slider("Demande prévue par le marché (Tonnes)", 500, 5000, 2000)
+# --- PAGE 3 : IA ---
+elif choix == "3. Prédiction IA (Stocks)":
+    st.title("🤖 Intelligence Artificielle & Stocks")
+    st.write("Ce module utilise un algorithme pour éviter que l'usine ne tombe en rupture de ferraille.")
     
-    if st.button("Exécuter Random Forest"):
-        pred = SteelEngine.predict_demand(tonnage)
-        safety = SteelEngine.calculate_roi(24) # Calcul basé sur KPI actuel
-        
-        c1, c2 = st.columns(2)
-        c1.metric("Besoin Prédit", f"{pred} T")
-        c2.metric("Stock de Sécurité Recommandé", f"{SteelEngine.simulate_buffer_stock(tonnage)} T")
-        
-        st.success(f"La simulation confirme que vous devez sécuriser {pred} tonnes pour éviter toute rupture.")
+    besoin = st.number_input("Entrez la demande client prévue (Tonnes)", 100, 5000, 1000)
+    
+    if st.button("Lancer la prédiction"):
+        stock_total = SteelEngine.predire_stock(besoin)
+        st.markdown(f"### 🛡️ Sécurité : Pour livrer {besoin} T, vous devez avoir **{stock_total} T** en stock.")
+        st.info("L'IA ajoute une marge de sécurité basée sur la variabilité des transports au Bénin.")
